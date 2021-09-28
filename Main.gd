@@ -9,7 +9,7 @@ var entities = {}
 var max_x = 0
 var max_y = 0
 
-signal update_finished(time)
+signal update_finished(time, count)
 
 func _ready():
 	var viewport = get_viewport().size
@@ -77,7 +77,7 @@ func do_work():
 					next_gen[pos] = entity
 		old_entity.queue_free()
 	entities = next_gen
-	emit_signal("update_finished", OS.get_ticks_msec() - start)
+	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size())
 
 func _process(delta):
 	do_work()
