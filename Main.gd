@@ -47,11 +47,9 @@ func set_scale(size):
 #	for i in self.get_children():
 #		i.scale = size
 
-func is_alive(position: Vector2, has_checked):
+func is_alive(position: Vector2):
 	var neighbors = 0
 	var is_alive = false
-	if has_checked.has(position):
-		return false
 	for x in range(position.x - 1, position.x + 2):
 		for y in range(position.y - 1, position.y + 2):
 			var check = Vector2(x,y)
@@ -60,7 +58,6 @@ func is_alive(position: Vector2, has_checked):
 				continue
 			if entities.has(check):
 				neighbors += 1
-	has_checked[position] = true
 	
 	if is_alive:
 		if neighbors < 2: # Any live cell with fewer than two live neighbours dies, as if by underpopulation.
@@ -78,19 +75,31 @@ func do_work():
 	var next_gen = {}
 	var scale_factor = tile_size * zoom_level
 	var has_checked = {}
-	for key in entities.keys():
-		var old_entity = entities[key]
-		
+	for key in entities.keys():		
 		for x in range(key.x - 1, key.x + 2):
 			for y in range(key.y - 1, key.y + 2):
 				var pos = Vector2(x, y)
-				if is_alive(pos, has_checked):# && x >= 0 && y >= 0 && x < max_x && y < max_y:
+				
+				#Cache
+				if has_checked.has(pos):
+					continue
+				has_checked[pos] = true
+				
+				var existing_entity = null
+				if entities.has(pos): existing_entity = entities[pos]
+				var was_alive = existing_entity != null
+				
+				var alive = is_alive(pos)
+				if alive && !was_alive:
 					var entity = available_entities.pop_back()
 					entity.global_position = Vector2(pos.x * scale_factor, pos.y  * scale_factor)
 					entity.visible = true
 					next_gen[pos] = entity
-		old_entity.visible = false
-		available_entities.push_back(old_entity)
+				elif !alive && was_alive:
+					existing_entity.visible = false
+					available_entities.push_back(existing_entity)
+				elif alive && was_alive:
+					next_gen[pos] = existing_entity
 	entities = next_gen
 	iteration_count += 1
 	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size(), iteration_count)
@@ -107,7 +116,7 @@ func handle_zoom(zoom_in, zoom_out):
 			"zoom",
 			camera.zoom,
 			new_zoom,
-			0.4,
+			0.2,
 			tween.TRANS_SINE,
 			# Easing out means we start fast and slow down as we reach the target value.
 			tween.EASE_OUT
