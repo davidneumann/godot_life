@@ -9,11 +9,13 @@ var entities = {}
 var max_x = 0
 var max_y = 0
 
-signal update_finished(time, count)
+signal update_finished(time, entity_count, iteration_count)
 var started = false
 
 onready var camera = $Camera
 onready var tween = $Camera/Tween
+
+var iteration_count = 0
 
 var available_entities = []
 func _ready():
@@ -88,7 +90,8 @@ func do_work():
 		old_entity.visible = false
 		available_entities.push_back(old_entity)
 	entities = next_gen
-	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size())
+	iteration_count += 1
+	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size(), iteration_count)
 
 func handle_zoom(zoom_in, zoom_out):
 	var new_zoom = camera.zoom
