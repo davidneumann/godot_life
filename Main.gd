@@ -113,7 +113,8 @@ func _unhandled_input(event):
 	handle_zoom(event.is_action_pressed("zoom_out"), event.is_action_pressed("zoom_in"))
 
 func _process(delta):
-	# do_work()
+	if started:
+		do_work()
 	var camera_direction = Vector2.ZERO
 	if Input.is_action_pressed("ui_right"):
 		camera_direction += Vector2.RIGHT
@@ -130,7 +131,7 @@ func _process(delta):
 	
 	if !started && Input.is_action_pressed("start"):
 		started = true
-		$Timer.start()
+		#$Timer.start()
 
 func _on_Timer_timeout():
 	do_work()

@@ -15,6 +15,7 @@ script = ExtResource( 1 )
 entity_scene = ExtResource( 2 )
 
 [node name="Timer" type="Timer" parent="."]
+wait_time = 0.2
 
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2( 511, 300 )
