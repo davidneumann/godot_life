@@ -20,12 +20,16 @@ var iteration_count = 0
 export var camera_speed = 100
 
 var available_entities = []
-func _ready():
+
+func add_entities_to_pool():
 	for i in 5000:
 		var entity = entity_scene.instance()
 		available_entities.push_back(entity)
 		entity.visible = false
 		add_child(entity)
+
+func _ready():
+	add_entities_to_pool()
 	var viewport = get_viewport().size
 	var scale_factor = tile_size * zoom_level
 	max_x = viewport.x / tile_size
@@ -91,6 +95,8 @@ func do_work():
 				
 				var alive = is_alive(pos)
 				if alive && !was_alive:
+					if available_entities.size() == 0:
+						add_entities_to_pool()
 					var entity = available_entities.pop_back()
 					entity.global_position = Vector2(pos.x * scale_factor, pos.y  * scale_factor)
 					entity.visible = true
