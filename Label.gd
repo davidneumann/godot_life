@@ -2,7 +2,7 @@ extends Label
 
 var last_update_time = 1
 var last_count = 1
-var last_iteration_count
+var last_iteration_count = 0
 func _on_Main_update_finished(time, count, iteration_count):
 	last_update_time = time
 	last_count = count

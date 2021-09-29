@@ -136,6 +136,7 @@ func _process(delta):
 	
 	if !started && Input.is_action_pressed("start"):
 		started = true
+		$CanvasLayer/Start.visible = false
 		#$Timer.start()
 
 func _on_Timer_timeout():
