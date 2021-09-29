@@ -14,15 +14,7 @@ font_data = ExtResource( 4 )
 script = ExtResource( 1 )
 entity_scene = ExtResource( 2 )
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Timer" type="Timer" parent="."]
-wait_time = 0.016
 
 [node name="Label" type="Label" parent="."]
 margin_left = 5.0
@@ -33,6 +25,13 @@ script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Background" type="Camera2D" parent="."]
+position = Vector2( 511, 300 )
+current = true
+smoothing_enabled = true
+
+[node name="Tween" type="Tween" parent="Background"]
 
 [connection signal="update_finished" from="." to="Label" method="_on_Main_update_finished"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

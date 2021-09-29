@@ -10,6 +10,7 @@ var max_x = 0
 var max_y = 0
 
 signal update_finished(time, count)
+var started = false
 
 func _ready():
 	var viewport = get_viewport().size
@@ -79,8 +80,48 @@ func do_work():
 	entities = next_gen
 	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size())
 
-func _process(delta):
-	do_work()
+func handle_zoom(zoom_in, zoom_out):
+	var new_zoom = $Background.zoom
 	
+	if zoom_in: new_zoom = new_zoom * 1.1
+	if zoom_out: new_zoom = new_zoom * 0.9
+	
+	if new_zoom != $Background.zoom:
+		var tween = $Background/Tween
+		tween.interpolate_property(
+			$Background,
+			"zoom",
+			$Background.zoom,
+			new_zoom,
+			0.4,
+			tween.TRANS_SINE,
+			# Easing out means we start fast and slow down as we reach the target value.
+			tween.EASE_OUT
+		)
+		tween.start()
+	
+func _unhandled_input(event):
+	handle_zoom(event.is_action_pressed("zoom_out"), event.is_action_pressed("zoom_in"))
+
+func _process(delta):
+	# do_work()
+	var camera_direction = Vector2.ZERO
+	if Input.is_action_pressed("ui_right"):
+		camera_direction += Vector2.RIGHT
+	if Input.is_action_pressed("ui_left"):
+		camera_direction += Vector2.LEFT
+	if Input.is_action_pressed("ui_down"):
+		camera_direction += Vector2.DOWN
+	if Input.is_action_pressed("ui_up"):
+		camera_direction += Vector2.UP
+	camera_direction = camera_direction * tile_size
+	$Background.position = $Background.position + camera_direction
+	
+	handle_zoom(Input.is_action_pressed("zoom_out"), Input.is_action_pressed("zoom_in"))
+	
+	if !started && Input.is_action_pressed("start"):
+		started = true
+		$Timer.start()
+
 func _on_Timer_timeout():
 	do_work()

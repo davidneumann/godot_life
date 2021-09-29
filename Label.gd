@@ -1,7 +1,7 @@
 extends Label
 
-var last_update_time = 0
-var last_count = 0
+var last_update_time = 1
+var last_count = 1
 func _on_Main_update_finished(time, count):
 	last_update_time = time
 	last_count = count
