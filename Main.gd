@@ -12,6 +12,9 @@ var max_y = 0
 signal update_finished(time, count)
 var started = false
 
+onready var camera = $Camera
+onready var tween = $Camera/Tween
+
 func _ready():
 	var viewport = get_viewport().size
 	var scale_factor = tile_size * zoom_level
@@ -81,17 +84,16 @@ func do_work():
 	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size())
 
 func handle_zoom(zoom_in, zoom_out):
-	var new_zoom = $Background.zoom
+	var new_zoom = camera.zoom
 	
 	if zoom_in: new_zoom = new_zoom * 1.1
 	if zoom_out: new_zoom = new_zoom * 0.9
 	
-	if new_zoom != $Background.zoom:
-		var tween = $Background/Tween
+	if new_zoom != camera.zoom:
 		tween.interpolate_property(
-			$Background,
+			camera,
 			"zoom",
-			$Background.zoom,
+			camera.zoom,
 			new_zoom,
 			0.4,
 			tween.TRANS_SINE,
@@ -115,7 +117,7 @@ func _process(delta):
 	if Input.is_action_pressed("ui_up"):
 		camera_direction += Vector2.UP
 	camera_direction = camera_direction * tile_size
-	$Background.position = $Background.position + camera_direction
+	camera.position = camera.position + camera_direction
 	
 	handle_zoom(Input.is_action_pressed("zoom_out"), Input.is_action_pressed("zoom_in"))
 	
