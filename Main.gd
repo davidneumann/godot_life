@@ -15,7 +15,13 @@ var started = false
 onready var camera = $Camera
 onready var tween = $Camera/Tween
 
+var available_entities = []
 func _ready():
+	for i in 5000:
+		var entity = entity_scene.instance()
+		available_entities.push_back(entity)
+		entity.visible = false
+		add_child(entity)
 	var viewport = get_viewport().size
 	var scale_factor = tile_size * zoom_level
 	max_x = viewport.x / tile_size
@@ -24,10 +30,10 @@ func _ready():
 		var count = 0 + (x % 2)
 		for y in viewport.y / tile_size:
 			if count % 2 == 0:
-				var entity = entity_scene.instance()
+				var entity = available_entities.pop_back()
 				entity.global_position = Vector2(x * scale_factor, y  * scale_factor)
-				add_child(entity)
 				entities[Vector2(floor(entity.global_position.x / scale_factor), floor(entity.global_position.y / scale_factor))] = entity
+				entity.visible = true
 			count += 1
 	#set_scale(Vector2.ONE * 5)
 	return
@@ -75,11 +81,12 @@ func do_work():
 			for y in range(key.y - 1, key.y + 2):
 				var pos = Vector2(x, y)
 				if is_alive(pos, has_checked):# && x >= 0 && y >= 0 && x < max_x && y < max_y:
-					var entity = entity_scene.instance()
+					var entity = available_entities.pop_back()
 					entity.global_position = Vector2(pos.x * scale_factor, pos.y  * scale_factor)
-					add_child(entity)
+					entity.visible = true
 					next_gen[pos] = entity
-		old_entity.queue_free()
+		old_entity.visible = false
+		available_entities.push_back(old_entity)
 	entities = next_gen
 	emit_signal("update_finished", OS.get_ticks_msec() - start, next_gen.size())
 
