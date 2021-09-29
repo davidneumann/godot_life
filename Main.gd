@@ -17,6 +17,8 @@ onready var tween = $Camera/Tween
 
 var iteration_count = 0
 
+export var camera_speed = 100
+
 var available_entities = []
 func _ready():
 	for i in 5000:
@@ -127,7 +129,7 @@ func _process(delta):
 		camera_direction += Vector2.DOWN
 	if Input.is_action_pressed("ui_up"):
 		camera_direction += Vector2.UP
-	camera_direction = camera_direction * tile_size
+	camera_direction = camera_direction * tile_size * delta * camera_speed
 	camera.position = camera.position + camera_direction
 	
 	handle_zoom(Input.is_action_pressed("zoom_out"), Input.is_action_pressed("zoom_in"))

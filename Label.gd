@@ -17,5 +17,6 @@ func _process(delta):
 	new_text += "\nDelta: " + str(time) + "ms" 
 	new_text += "\n" + str(floor(time / last_count * 100) / 100) + " ms/entity"
 	new_text += "\nIteration: " + str(last_iteration_count)
+	new_text += "\nFPS: " + str(Engine.get_frames_per_second())
 	self.text = new_text
 	last_time = start
